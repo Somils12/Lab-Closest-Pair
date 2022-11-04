@@ -111,7 +111,7 @@ public class DistanciaMin {
     }
 
     public static void main(String[] args) {
-        int x1, y1, tamaño = 1000, repeticiones = 1;
+        int x1, y1, tamaño = 10000, repeticiones = 256;
         long suma;
         Random num = new Random();
         long[] tiempo = new long[tamaño];
