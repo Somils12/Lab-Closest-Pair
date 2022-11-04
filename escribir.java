@@ -37,7 +37,7 @@ public class escribir {
                 String time = String.valueOf((int) tiempo[i]);
                 String imput = String.valueOf(i);
                 escribir.write(imput + " " + operacion + " " + time + "\r");
-                /*   if (i < 100) {
+                if (i < 100) {
                     i = i + 10;
                 } else {
                     if ((i > 100) && (i < 300)) {
@@ -57,7 +57,7 @@ public class escribir {
                             }
                         }
                     }
-                }*/
+                }
             }
             escribir.close();
         } catch (IOException ex) {

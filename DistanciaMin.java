@@ -141,7 +141,7 @@ public class DistanciaMin {
             }
             tiempo[i] = suma / repeticiones; //tiempo promedio de ejecucion para cada tamaño i (numero de puntos en la lista)
             System.out.println("El tiempo promedio para un tamaño " + i + " es: " + tiempo[i]);
-            /*   if (i < 100) {
+              if (i < 100) {
                 i = i + 10;
             } else {
                 if ((i > 100) && (i < 300)) {
@@ -161,8 +161,8 @@ public class DistanciaMin {
                         }
                     }
                 }
-            }*/
-            i=i+1;
+            }
+           // i=i+1;
         }
         escribir P = new escribir();
         P.crearArchivo();
