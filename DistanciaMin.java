@@ -38,7 +38,7 @@ public class DistanciaMin {
         return min;
     }
 
-    //metodo para ordenar los puntos de la lista de acuerdo a "x" y de acuerdo a "y"
+    //metodo para ordenar los puntos de la lista de acuerdo a "x" y de acuerdo a "y"...
     public double recursivoPar(punto[] puntos) {
         int n = puntos.length;
         punto[] ordenX = new punto[n];
