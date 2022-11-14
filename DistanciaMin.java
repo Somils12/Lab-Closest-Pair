@@ -5,7 +5,9 @@
 package com.mycompany.distanciamin;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
+
 /*Somil Sandoval Diaz
   Codigo del curso: IST 4310-01
   Codigo: 200151782
@@ -19,16 +21,13 @@ de puntos utilizando metodos recursivos.*/
  */
 public class DistanciaMin {
 
-    //distancia ecludiana entre dos puntos
-    public double distancia(punto p1, punto p2) {
-        return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-    }
+    private static double MIN_VAL = Double.MAX_VALUE;
 
     public double fuerzabruta(punto[] list) {
-        double min = -1;
+        double min = MIN_VAL;
         for (int i = 0; i < list.length; i++) {
             for (int j = i + 1; j < list.length; j++) {
-                double dist = distancia(list[i], list[j]);
+                double dist = punto.distancia(list[i], list[j]);
                 if (dist < min) {
                     min = dist;
                 }
@@ -38,7 +37,7 @@ public class DistanciaMin {
         return min;
     }
 
-    //metodo para ordenar los puntos de la lista de acuerdo a "x" y de acuerdo a "y"...
+    //metodo para ordenar los puntos de la lista de acuerdo a "x" y de acuerdo a "y"
     public double recursivoPar(punto[] puntos) {
         int n = puntos.length;
         punto[] ordenX = new punto[n];
@@ -47,8 +46,8 @@ public class DistanciaMin {
             ordenX[i] = puntos[i];
             ordenY[i] = puntos[i];
         }
-        Arrays.sort(ordenX, (p1, p2) -> p1.x - p2.x);
-        Arrays.sort(ordenY, (p1, p2) -> p1.y - p2.y);
+        Arrays.sort(ordenX, new PointXComparator());
+        Arrays.sort(ordenY, new PointYComparator());
         return recursivoPar(ordenX, ordenY, 0, n - 1);
     }
 
@@ -86,7 +85,6 @@ public class DistanciaMin {
                 }
             }
         }
-
         // ahora encuentra la distancia mínima en la franja
         double distanciaMin_franja = distancia_minFranja(ondenY, franjaIZQ, franjaDER);
 
@@ -96,13 +94,80 @@ public class DistanciaMin {
 
     // minima distancia entre los puntos de la franja
     public double distancia_minFranja(punto[] ordenY, int inicio, int ancho) {
-        double min = -1;
+        double min = MIN_VAL;
         for (int i = inicio; i <= ancho; i++) {
             for (int j = i + 1; j <= ancho; j++) {
-                min = min(min, distancia(ordenY[i], ordenY[j]));
+                min = min(min, punto.distancia(ordenY[i], ordenY[j]));
             }
         }
         return min;
+    }
+
+    public static punto[] completList(punto[] List_puntos, int i) {
+        int sw;
+        int x_min = -i, x_max = i;
+        int y_min = -4, y_max = 4;
+        Random rand = new Random();
+        for (int j = 0; j < i; j++) {
+            do {
+                int x = x_min + rand.nextInt(x_max - x_min);
+                int y = y_min + rand.nextInt(y_max - y_min);
+                sw = repetidos(List_puntos, x, y, j);
+                if (sw == 0) {
+                    List_puntos[j] = new punto(x, y);
+                }
+            } while (sw == 1);
+        }
+        return List_puntos;
+
+    }
+
+    public static int repetidos(punto[] lista_puntos, int x, int y, int j) {
+        int sw = 0, k = 0;
+        while ((k < j) && (sw == 0)) {
+            if ((lista_puntos[k].x == x) && (lista_puntos[k].y == y)) {
+                sw = 1;
+            }
+            k = k + 1;
+        }
+        return sw;
+    }
+
+    public static long timing(punto[] List_puntos, long suma) {
+        //Inicio de ejecucion
+        long inicioEjecucion = System.nanoTime();
+        DistanciaMin obj = new DistanciaMin();
+        //double distancia = obj.fuerzabruta(List_puntos);
+        double distancia = obj.recursivoPar(List_puntos);
+        long finEjecucion = System.nanoTime();  //Fin de ejecuacion
+        System.out.println("La distancia minima es: " + distancia);
+        suma = (finEjecucion - inicioEjecucion) + suma;
+        return suma;
+    }
+
+    public static int indice(int i) {
+        if (i < 100) {
+            i = i + 10;
+        } else {
+            if ((i > 100) && (i < 300)) {
+                i = i + 50;
+            } else {
+                if (i < 1000) {
+                    i = i + 100;
+                } else {
+                    if ((i > 1000) && (i < 3000)) {
+                        i = i + 300;
+                    } else {
+                        if (i < 10000) {
+                            i = i + 1000;
+                        } else {
+                            i = i + 10000;
+                        }
+                    }
+                }
+            }
+        }
+        return i;
     }
 
     //Encontrar el minimo entre dos valores
@@ -111,13 +176,11 @@ public class DistanciaMin {
     }
 
     public static void main(String[] args) {
-        int x1, y1, tamaño = 10000, repeticiones = 256;
+        int tamaño = 10000, repeticiones = 256;
         long suma;
-        Random num = new Random();
         long[] tiempo = new long[tamaño];
         long[] operaciones = new long[tamaño];
-        int i = 0;
-
+        int i = 10;
         //tamaño del conjunto de puntos
         while (i < tamaño) {
             System.out.println("El tamaño es: " + (i));
@@ -127,45 +190,32 @@ public class DistanciaMin {
             for (int k = 0; k < repeticiones; k++) {
                 punto[] List_puntos = new punto[i];
                 //Se llena la lista de puntos con numeros aleatorios
-                for (int j = 0; j < i; j++) {
-                    x1 = num.nextInt(256000);
-                    y1 = num.nextInt(256000);
-                    List_puntos[j] = new punto(x1, y1);
-                }
-                long inicioEjecucion = System.nanoTime(); //Inicio de ejecucion
-                DistanciaMin obj = new DistanciaMin();
-                obj.recursivoPar(List_puntos);
-                long finEjecucion = System.nanoTime();  //Fin de ejecuacion
-
-                suma = (finEjecucion - inicioEjecucion) / 10000 + suma;
+                List_puntos = completList(List_puntos, i);
+                suma = timing(List_puntos, suma);
             }
             tiempo[i] = suma / repeticiones; //tiempo promedio de ejecucion para cada tamaño i (numero de puntos en la lista)
             System.out.println("El tiempo promedio para un tamaño " + i + " es: " + tiempo[i]);
-              if (i < 100) {
-                i = i + 10;
-            } else {
-                if ((i > 100) && (i < 300)) {
-                    i = i + 50;
-                } else {
-                    if (i < 1000) {
-                        i = i + 100;
-                    } else {
-                        if ((i > 1000) && (i < 3000)) {
-                            i = i + 300;
-                        } else {
-                            if (i < 10000) {
-                                i = i + 1000;
-                            } else {
-                                i = i + 10000;
-                            }
-                        }
-                    }
-                }
-            }
-           // i=i+1;
+            i = indice(i);
         }
         escribir P = new escribir();
         P.crearArchivo();
         P.escribirArchivo(operaciones, tiempo, tamaño);
     }
+}
+
+class PointXComparator implements Comparator<punto> {
+
+    @Override
+    public int compare(punto pointA, punto pointB) {
+        return Integer.compare(pointA.x, pointB.x);
+    }
+}
+
+class PointYComparator implements Comparator<punto> {
+
+    @Override
+    public int compare(punto pointA, punto pointB) {
+        return Integer.compare(pointA.y, pointB.y);
+    }
+
 }

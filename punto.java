@@ -17,4 +17,9 @@ public class punto {
         this.x = x;
         this.y = y;
     }
+    
+        //distancia ecludiana entre dos puntos
+    public static double distancia(punto p1, punto p2) {
+        return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    }
 }
